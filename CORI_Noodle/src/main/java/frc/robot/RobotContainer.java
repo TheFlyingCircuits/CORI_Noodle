@@ -4,11 +4,51 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.FieldElement;
+import frc.robot.commands.MeasureWheelDiameter;
+import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.drivetrain.GyroIOPigeon;
+import frc.robot.subsystems.drivetrain.GyroIOSim;
+import frc.robot.subsystems.drivetrain.SwerveModuleIOKraken;
+import frc.robot.subsystems.drivetrain.SwerveModuleIOSim;
+import frc.robot.subsystems.intake.Intake;
+// import frc.robot.subsystems.leds.LEDs;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonLib;
+
+import edu.wpi.first.wpilibj.util.Color;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -19,12 +59,23 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
+  /**** INITIALIZE SUBSYSTEMS ****/
+        if (RobotBase.isReal()) {
+            drivetrain = new Drivetrain(
+                new GyroIOPigeon(),
+                new SwerveModuleIOKraken(3, 1, -0.00342, 7, false, false, "frontLeft"),
+                new SwerveModuleIOKraken(2, 2, 0.36816, 6, false, false, "frontRight"),
+                new SwerveModuleIOKraken(1, 5, -0.09009, 5, false, true, "backLeft"),
+                new SwerveModuleIOKraken(0, 6, -0.37622, 4, true, false, "backRight"),
+                new VisionIOPhotonLib()
+        );}
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+      new CommandXboxController(Constants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

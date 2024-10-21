@@ -1,5 +1,10 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.VendorWrappers.Neo;
+
 public class Arm extends SubsystemBase {
     
     private Neo leftPivot;
@@ -13,7 +18,7 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput()
+        Logger.recordOutput("");
     }
 
 }
