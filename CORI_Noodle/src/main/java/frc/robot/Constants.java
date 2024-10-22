@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.pathplanner.lib.path.PathConstraints;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -72,75 +73,43 @@ public final class Constants {
 
         /**
          * Distance between the center point of the left wheels and the center point of the right wheels.
-         */
-        public static final double trackwidthMeters = Units.inchesToMeters(23.75);
-        /**
+         */        /**
          * Distance between the center point of the front wheels and the center point of the back wheels.
          */
-        public static final double wheelbaseMeters = Units.inchesToMeters(22.75);
         /**
          * Distance from the center of the robot to each swerve module.
-         */
-        public static final double drivetrainRadiusMeters = Math.hypot(wheelbaseMeters / 2.0, trackwidthMeters / 2.0); //0.4177
+         */  //0.4177
 
+        public static final double trackwidthMeters = Units.inchesToMeters(22.75);
+        /**
+         * Distance between the center point of the front wheels and the center point of
+         * the back wheels.
+         */
+        public static final double wheelbaseMeters = Units.inchesToMeters(22.75);
+
+        public static final double driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
+        public static final double steerReduction = (14.0 / 50.0) * (10.0 / 60.0);
+
+        public static final double wheelDiamaterMeters = 0.10033;
+        public static final double wheelCircumferenceMeters = wheelDiamaterMeters * Math.PI;
+        public static final double drivetrainRadiusMeters = Math.hypot(wheelbaseMeters / 2.0, trackwidthMeters / 2.0);
 
         public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-            new Translation2d(wheelbaseMeters / 2.0, trackwidthMeters / 2.0),
-            new Translation2d(wheelbaseMeters / 2.0, -trackwidthMeters / 2.0),
-            new Translation2d(-wheelbaseMeters / 2.0, trackwidthMeters / 2.0),
-            new Translation2d(-wheelbaseMeters / 2.0, -trackwidthMeters / 2.0)
-        );
-
-// I JUST COPY AND PASTED I DON"T KNOW WHAT IS RELAVENT!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-        /**
-         * The maximum possible velocity of the robot in meters per second.
-         * <br>
-         * This is a measure of how fast the robot will be able to drive in a straight line, based off of the empirical free speed of the drive Krakens.
-         */
-        public static final double krakenFreeSpeedRPM = 5800;
-        public static final double krakenFreeSpeedRotationsPerSecond = krakenFreeSpeedRPM / 60.;
-        public static final double maxAchievableVelocityMetersPerSecond = krakenFreeSpeedRotationsPerSecond *
-            SwerveModuleConstants.driveGearReduction * SwerveModuleConstants.wheelCircumferenceMeters; // ~5.23 using a theoretical wheel radius of 2 inches m/s
-                                                                                                       // ~5.06 when adding 1/16 of an inch of wheel sink into the carpet.
-                                                                                                       // ~5.10 using an emperical measurement of wheel radius on fresh wheels.
-                                                                                                       // Actual top speed based on testing is ~4.7 m/s
-                                                                                                       // (calculating top speed using kv yeilds [12 / 2.42] ~ 4.96 m/s,
-                                                                                                       //  but I don't think we can actually achieve this because 
-                                                                                                       //  the battery voltage will likely drop below 12 when all drive motors are running)
-                                                                                                       // To give ourselves a little breathing room, we use a max speed of 4.5 m/s in auto.
-
-        /**
-         * This is the max desired speed that will be achievable in teleop.
-         * <br>
-         * If the controller joystick is maxed in one direction, it will drive at this speed.
-         * <br>
-         * This value will be less than or equal to the maxAchievableVelocityMetersPerSecond, depending on driver preference.
-         */
-        public static final double maxDesiredTeleopVelocityMetersPerSecond = maxAchievableVelocityMetersPerSecond; 
-
-        /**
-         * The maximum achievable angular velocity of the robot in radians per second.
-         * <br>
-         * This is a measure of how fast the robot can rotate in place, based off of maxAchievableVelocityMetersPerSecond.
-         */
-        public static final double maxAchievableAngularVelocityRadiansPerSecond = maxAchievableVelocityMetersPerSecond / drivetrainRadiusMeters; // Theoretical ~1.93 rotations per second
-                                                                                                                                                 // using 4.7 m/s for max linear speed yeilds ~1.79 rotations per second
-                                                                                                                                                 // using 4.5 m/s for max linear speed yeilds ~1.71 rotations per second
-                                                                                                                                                 // we use 1.0 rotations per second in auto to be extra conservative
-                                                                                                                                                 // because any time you're rotating, you're taking away from your translational speed.
-
-        /**
-         * This is the max desired angular velocity that will be achievable in teleop.
-         * <br>
-         * If the controller rotation joystick is maxed in one direction, it will rotate at this speed.
-         * <br>
-         * This value will be tuned based off of driver preference.
-         */
+                new Translation2d(wheelbaseMeters / 2.0, trackwidthMeters / 2.0),
+                new Translation2d(wheelbaseMeters / 2.0, -trackwidthMeters / 2.0),
+                new Translation2d(-wheelbaseMeters / 2.0, trackwidthMeters / 2.0),
+                new Translation2d(-wheelbaseMeters / 2.0, -trackwidthMeters / 2.0));
         public static final double maxDesiredTeleopAngularVelocityRadiansPerSecond = Units.rotationsToRadians(0.85);
+         
+        public static final double maxAchievableVelocityMetersPerSecond = 5880.0 / 60.0 *
+        driveReduction *
+        wheelDiamaterMeters * Math.PI;
+        public static final double maxDesiredTeleopVelocityMetersPerSecond = 4.3;
+        public static final double maxAchievableAngularVelocityRadiansPerSecond = maxAchievableVelocityMetersPerSecond /
+                Math.hypot(trackwidthMeters / 2.0, wheelbaseMeters / 2.0);
+        public static final double maxDesiredAngularVelocityRadiansPerSecond = 5.4;
 
-
+        public static final double maxDesiredDriverAccel = 27.27;
         public static final PathConstraints pathfindingConstraints = new PathConstraints(
                 1.0, 1.0,
                 Units.degreesToRadians(360), Units.degreesToRadians(360));
@@ -397,7 +366,22 @@ public final class Constants {
         public static final double mountPosePitchDegrees = -0.11852765083312988;
         public static final double mountPoseRollDegrees = -1.0425487756729126;
     }
+    public final static class MotorConstants {
+        public static final int universalCurrentLimitAmps = 50;
 
+        // Motor configs
+        public static final int angleContinuousCurrentLimit = 50;
+        public static final boolean angleInvert = true;
+        public static final IdleMode angleNeutralMode = IdleMode.kBrake;
+        
+        public static final int driveContinuousCurrentLimit = 60;
+        public static final boolean driveInvert = true;
+        public static final IdleMode driveNeutralMode = IdleMode.kBrake;
+    }
+    public final static class ControllerConstants {
+        public static final double controllerDeadzone = 0.175;
+        public static final double maxThrottle = 1.0;
+    }
 
   }
 

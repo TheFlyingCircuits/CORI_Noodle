@@ -16,7 +16,7 @@ public class Intake extends SubsystemBase {
         topIntakeNeo = new Neo(IntakeConstants.topIntakeNeoID);
         indexerNeo = new Neo(IntakeConstants.topIntakeNeoID);
     }
-    private Command runIntakeCommand(double bottomIntakeVolts, double topIntakeVolts, double indexerIntakeVolts) {
+    public Command runIntakeCommand(double bottomIntakeVolts, double topIntakeVolts, double indexerIntakeVolts) {
         // we can use this for intake, stop intake, and eject
         return this.run(
             () -> {

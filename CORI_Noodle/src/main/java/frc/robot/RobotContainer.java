@@ -6,13 +6,19 @@ package frc.robot;
 
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.FieldElement;
-import frc.robot.commands.MeasureWheelDiameter;
+import frc.robot.commands.Autos;
+import frc.robot.commands.ExampleCommand;
+import frc.robot.subsystems.drivetrain.SwerveModule;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.drivetrain.GyroIOPigeon;
 import frc.robot.subsystems.drivetrain.GyroIOSim;
-import frc.robot.subsystems.drivetrain.SwerveModuleIOKraken;
-import frc.robot.subsystems.drivetrain.SwerveModuleIOSim;
-import frc.robot.subsystems.intake.Intake;
+//import frc.robot.subsystems.drivetrain.SwerveModuleIOSim;
+import frc.robot.subsystems.drivetrain.SwerveModuleIO;
+import frc.robot.subsystems.drivetrain.SwerveModuleIONeo;
+import frc.robot.subsystems.leds.LEDs;
+import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.HumanDriver;
+import frc.robot.subsystems.Intake;
 // import frc.robot.subsystems.leds.LEDs;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonLib;
@@ -59,56 +65,72 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+// making drivetrain final was giving error so I removed it
+  public Drivetrain drivetrain;
+  public Intake intake;
+  public Intake indexer;
+  public LEDs leds;
+  public final HumanDriver charlie = new HumanDriver(0);
+  public final HumanDriver ben = new HumanDriver(1);
 
   /**** INITIALIZE SUBSYSTEMS ****/
-        if (RobotBase.isReal()) {
-            drivetrain = new Drivetrain(
-                new GyroIOPigeon(),
-                new SwerveModuleIOKraken(3, 1, -0.00342, 7, false, false, "frontLeft"),
-                new SwerveModuleIOKraken(2, 2, 0.36816, 6, false, false, "frontRight"),
-                new SwerveModuleIOKraken(1, 5, -0.09009, 5, false, true, "backLeft"),
-                new SwerveModuleIOKraken(0, 6, -0.37622, 4, true, false, "backRight"),
-                new VisionIOPhotonLib()
-        );}
-  // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(Constants.kDriverControllerPort);
-
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
+public RobotContainer() {
+if (RobotBase.isReal()) {
+    drivetrain = new Drivetrain(
+        new GyroIOPigeon(),
+        new SwerveModuleIONeo(1, 2, -0.177978515625, 0),
+        new SwerveModuleIONeo(3, 4, 0.33935546875, 1),
+        new SwerveModuleIONeo(5, 6, -0.339599609375, 2),
+        new SwerveModuleIONeo(7, 8, -0.206787109375, 3),
+        new VisionIOPhotonLib()
+      );
+  }
+  // drives I think
+  drivetrain.setDefaultCommand(drivetrain.run(() -> {drivetrain.fieldOrientedDrive(charlie.getRequestedFieldOrientedVelocity(), true);}));
+  realBindings();
     // Configure the trigger bindings
-    configureBindings();
+    realBindings();
   }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
+  private void realBindings() {
+    CommandXboxController controller = charlie.getXboxController();
+    CommandXboxController benController = ben.getXboxController();
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-  }
+    controller.rightTrigger()
+    .onTrue(
+        //intake after note if on other side of the field
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+        intakeTowardsNote(charlie::getRequestedFieldOrientedVelocity)
+    );
+    controller.leftTrigger().whileTrue(reverseIntake());
   }
+  private Command runIntake() {
+    return intake.runIntakeCommand(2,2,2);
+}
+
+private Command reverseIntake() {
+    return intake.runIntakeCommand(-6,-6,-6);
+}
+  private Command intakeNote() {
+    return new ScheduleCommand(leds.playIntakeAnimationCommand(() -> {return drivetrain.getBestNoteLocationFieldFrame().isPresent();}).withName("intake animation"))
+        .alongWith(this.runIntake());
+  
+}
+    /**
+     * @param howToDriveWhenNoNoteDetected let's driver have control if the noteCam doesn't see a note
+     * @return
+     */
+  private Command intakeTowardsNote(Supplier<ChassisSpeeds> howToDriveWhenNoNoteDetected) {
+    return intakeNote().raceWith(drivetrain.run(() -> {
+
+        // have charlie stay in control when the noteCam doesn't see a note
+        if (drivetrain.getBestNoteLocationFieldFrame().isEmpty()) {
+            drivetrain.fieldOrientedDrive(howToDriveWhenNoNoteDetected.get(), true);
+            return;
+        }
+
+        // drive towards the note when the noteCam does see a note.
+        drivetrain.driveTowardsNote(drivetrain.getBestNoteLocationFieldFrame().get());
+    }));
+}
 }

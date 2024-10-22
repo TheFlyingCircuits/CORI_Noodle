@@ -28,7 +28,7 @@ public class SwerveModule {
     private static PIDController anglePID;
     private SimpleMotorFeedforward driveFeedforward;
 
-    public SwerveModule(int moduleIndex) {
+    public SwerveModule(SwerveModuleIO io, int moduleIndex) {
         this.moduleIndex = moduleIndex;
 
       inputs = new SwerveModuleIOInputsAutoLogged();

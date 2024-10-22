@@ -25,7 +25,7 @@ public interface GyroIO {
         public double robotAccelY = 0;
         public double robotAccelZ = 0;
 
-        public Rotation2d robotPitchRoattion2d = new Rotation2d(0.0);
+        public Rotation2d robotPitchRotation2d = new Rotation2d(0.0);
         public Rotation2d robotRollRotation2d = new Rotation2d(0.0);
     }
 
