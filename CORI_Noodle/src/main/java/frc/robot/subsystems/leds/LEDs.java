@@ -27,8 +27,9 @@ public class LEDs extends SubsystemBase {
     private static boolean putSwitcher = true;
 
     private Timer ledTimer= new Timer();
-    int rainbowNumber = 0;
-    int[] hues = new int[buffer.getLength()];
+
+    int rainbowNumber;
+    int[] hues;
 
     public LEDs() {
         leds = new AddressableLED(0);
@@ -38,6 +39,9 @@ public class LEDs extends SubsystemBase {
         
         leds.setData(buffer);
         leds.start();
+
+        int rainbowNumber = 0;
+        int[] hues = new int[buffer.getLength()];
 
         ledTimer.restart();
         for (int i = 0; i < buffer.getLength(); i++) {

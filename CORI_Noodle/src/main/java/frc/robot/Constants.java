@@ -39,9 +39,9 @@ public final class Constants {
   public final static boolean isDemoMode = false;
     public static final int kDriverControllerPort = 0;
     public final static class IntakeConstants {
-        public static final int bottomIntakeNeoID = 99;
-        public static final int topIntakeNeoID = 99;
-        public static final int indexerNeoID = 99;
+        public static final int bottomIntakeNeoID = 10;
+        public static final int topIntakeNeoID = 9;
+        public static final int indexerNeoID = 13;
     }
     public final static class SwerveModuleConstants {
       /** Rotations of the drive wheel per rotations of the drive motor. */
