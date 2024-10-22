@@ -29,17 +29,17 @@ public final class Constants {
 
         //TODO: FILL
         /** Distance from the floor to the center of the pivot. This is used for angle calculations for shoot from anywhere. */
-        public final static double pivotHeightMeters = Units.inchesToMeters(0);
+        public final static double pivotHeightMeters = Units.inchesToMeters(15);
         
         /** Horizontal distance from the robot center to the pivot center */
-        public final static double pivotOffsetMeters = Units.inchesToMeters(0); // 22 centimeters
+        public final static double pivotOffsetMeters = Units.inchesToMeters(-13);
 
-        public final static double armLengthMeters = Units.inchesToMeters(0); // 18.29 something from cad?
+        public final static double armLengthMeters = Units.inchesToMeters(17.73);
 
 
 
-        public static final double armMinAngleDegrees = 0;
-        public static final double armMaxAngleDegrees = 0;
+        public static final double armMinAngleDegrees = 1.285;
+        public static final double armMaxAngleDegrees = 100;
 
         public final static double armMaxVelDegreesPerSecond = 360.;
         public final static double armMaxAccelDegreesPerSecondSquared = 660.;
@@ -64,8 +64,13 @@ public final class Constants {
 
         //TODO: FILL
         public final static Transform3d robotToNoteCamera = new Transform3d(
-            new Translation3d(Units.inchesToMeters(0), 0, Units.inchesToMeters(0)),
+            new Translation3d(Units.inchesToMeters(-17.75), 0, Units.inchesToMeters(13.75)),
             new Rotation3d(0, Math.toRadians(0), Math.toRadians(0))
+        );
+
+        public final static Transform3d robotToShooterCamera = new Transform3d(
+            new Translation3d(Units.inchesToMeters(7.125), 0, Units.inchesToMeters(11)),
+            new Rotation3d(0, Math.toRadians(-28), 0)
         );
     }
 
