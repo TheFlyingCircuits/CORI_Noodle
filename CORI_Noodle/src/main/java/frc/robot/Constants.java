@@ -61,6 +61,25 @@ public final class Constants {
         public final static double kDArmVoltsSecondsPerDegree = 0;//0.01;
     }
 
+    public final static class ShooterConstants {
+        /**Rotations of the motor per rotations of the wheel; a number greater than 1 represents a reduction. */
+        public final static double flywheelGearReduction = 1.;
+        public final static double flywheelCircumferenceMeters = Units.inchesToMeters(4)*Math.PI;
+
+        /**Meters per second of the flywheel per RPM that the motor reads, multiply this number by RPM to get MPS. */
+        public final static double motorRPMToFlywheelMPS = flywheelCircumferenceMeters * flywheelGearReduction / 60.;
+    
+        public final static double kPFlywheelsVoltsSecondsPerMeter = .1;
+
+        public final static double kSFlywheelsVolts = 0.2735; //copied from ronnie
+        public final static double kVFlywheelsVoltsSecondsPerMeter = 0.38;
+        public final static double kAFlywheelsVoltsSecondsSquaredPerMeter = 0.;
+
+        public final static int currentLimitAmps = 100;
+
+        public static final double motorMaxTempCelsius = 70;
+    }
+
     public static class VisionConstants {
 
         //TODO: FILL

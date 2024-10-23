@@ -9,6 +9,7 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -24,6 +25,7 @@ public class RobotContainer {
     private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
     public Arm arm;
+    public Shooter shooter;
 
     // Replace with CommandPS4Controller or CommandJoystick if needed
     private final CommandXboxController controller = new CommandXboxController(0);
@@ -31,8 +33,10 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         arm = new Arm();
+        shooter = new Shooter();
 
         arm.setDefaultCommand(arm.holdCurrentPositionCommand());
+        shooter.setDefaultCommand(shooter.setFlywheelSurfaceSpeedCommand(0));
 
         // Configure the trigger bindings
         configureBindings();
@@ -48,10 +52,20 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
-        controller.a().onTrue(arm.setDesiredDegreesCommand(ArmConstants.armMinAngleDegrees));
-        controller.x().onTrue(arm.setDesiredDegreesCommand(30));
-        controller.y().onTrue(arm.setDesiredDegreesCommand(60));
-        controller.b().onTrue(arm.setDesiredDegreesCommand(90));
+        // controller.a().onTrue(arm.setDesiredDegreesCommand(ArmConstants.armMinAngleDegrees));
+        // controller.x().onTrue(arm.setDesiredDegreesCommand(30));
+        // controller.y().onTrue(arm.setDesiredDegreesCommand(60));
+        // controller.b().onTrue(arm.setDesiredDegreesCommand(90));
+
+        controller.a().whileTrue(shooter.setFlywheelSurfaceSpeedCommand(6));
+        
+        controller.b().whileTrue(shooter.setFlywheelSurfaceSpeedCommand(12));
+        
+        controller.x().whileTrue(shooter.setFlywheelSurfaceSpeedCommand(18));
+        
+        controller.y().whileTrue(shooter.setFlywheelSurfaceSpeedCommand(25));
+
+
     }
 
     /**
