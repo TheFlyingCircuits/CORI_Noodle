@@ -39,10 +39,10 @@ public class RobotContainer {
     if (RobotBase.isReal()) {
       drivetrain = new Drivetrain( // fr 0.092041015625, br , 0.0419921875, fl -0.178955078125, bl -0.332763671875
           new GyroIOPigeon(),
-          new SwerveModuleIONeo(7, 8, -0.178955078125, 0), 
-          new SwerveModuleIONeo(5, 6, 0.092041015625, 3),
-          new SwerveModuleIONeo(3, 4, -0.332763671875, 2),
-          new SwerveModuleIONeo(1, 2,  0.0419921875, 1),
+          new SwerveModuleIONeo(7, 8, -0.184814453125, 0), 
+          new SwerveModuleIONeo(5, 6, 0.044677734375, 3),
+          new SwerveModuleIONeo(3, 4, -0.3349609375, 2),
+          new SwerveModuleIONeo(1, 2,  0.088134765625, 1),
           new VisionIOPhotonLib()
         );
     }
@@ -61,13 +61,11 @@ public class RobotContainer {
   private void realBindings() {
     CommandXboxController controller = charlie.getXboxController();
     CommandXboxController benController = ben.getXboxController();
-
     controller.rightTrigger()
       .onTrue(
         //intake after note if on other side of the field
-
         intakeTowardsNote(charlie::getRequestedFieldOrientedVelocity)
-      );
+    );
     controller.leftTrigger().whileTrue(reverseIntake());
     controller.y().onTrue(new InstantCommand(() -> drivetrain.setPoseToVisionMeasurement()).repeatedly().until(drivetrain::seesTag));
   }
@@ -80,9 +78,12 @@ private Command reverseIntake() {
 }
   private Command intakeNote() {
     return new ScheduleCommand(leds.playIntakeAnimationCommand(() -> {return drivetrain.getBestNoteLocationFieldFrame().isPresent();}).withName("intake animation"))
-        .alongWith(this.runIntake()); //TODO: add intake logic/sequencing
-  
+        .alongWith(this.runIntake().andThen(new ScheduleCommand(positionNote())));
 }
+
+  private Command positionNote() {
+    return intake.runIntakeCommand(0,0,-2).withTimeout(3);
+  }
     /**
      * @param howToDriveWhenNoNoteDetected let's driver have control if the noteCam doesn't see a note
      * @return
@@ -99,5 +100,5 @@ private Command reverseIntake() {
         // drive towards the note when the noteCam does see a note.
         drivetrain.driveTowardsNote(drivetrain.getBestNoteLocationFieldFrame().get());
     }));
-}
+  }
 }
