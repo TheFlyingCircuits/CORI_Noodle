@@ -109,6 +109,10 @@ public class Arm extends SubsystemBase {
         return pivotAngleDegrees >= ArmConstants.armMaxAngleDegrees;
     }
 
+    public double getDegrees() {
+        return pivotAngleDegrees;
+    }
+
 
     //This method is in here because future commands which want to move the arm will be more easily written.
     //Rather than having to motion profile within each command, it can be just one function call.
