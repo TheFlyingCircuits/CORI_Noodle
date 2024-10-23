@@ -5,8 +5,10 @@
 package frc.robot;
 
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.FieldElement;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.PrepShot;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Shooter;
@@ -17,7 +19,9 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.HumanDriver;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -43,19 +47,6 @@ public class RobotContainer {
 
     public final HumanDriver driver = new HumanDriver(0);
 
-
-    /**
-     * Use this method to define your trigger->command mappings. Triggers can be created via the
-     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-     * predicate, or via the named factories in {@link
-     * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-     * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-     * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-     * joysticks}.
-     */
-    private void configureBindings() {
-
-    }
 
 
 
@@ -102,10 +93,22 @@ public class RobotContainer {
         // controller.y().onTrue(arm.setDesiredDegreesCommand(60));
         // controller.b().onTrue(arm.setDesiredDegreesCommand(90));
 
+        Trigger inSpeakerShotRange = new Trigger(drivetrain::inSpeakerShotRange);
+        controller.rightBumper().and(inSpeakerShotRange)
+            .onTrue(
+                this.speakerShot()
+                .andThen(new ScheduleCommand(this.resetShooter()))
+            );
+
+        controller.b().onTrue(shart().andThen(new ScheduleCommand(resetShooter())));
+        controller.x().onTrue(resetShooter());
+
 
         controller.leftTrigger().whileTrue(reverseIntake());
         controller.y().onTrue(new InstantCommand(() -> drivetrain.setPoseToVisionMeasurement()).repeatedly().until(drivetrain::seesTag));
     }
+
+
 
     private Command runIntake() {
         return intake.runIntakeCommand(5,5,5);
@@ -120,10 +123,45 @@ public class RobotContainer {
     }
 
     private Command positionNote() {
-        return intake.runIntakeCommand(0,0,-2).alongWith(
-                shooter.setFlywheelSurfaceSpeedCommand(-1)
-            ).withTimeout(0.6);
+        //reverse intake to position note and also to eject double intakes
+        return intake.runIntakeCommand(-4,-4,-4).alongWith(
+                shooter.setFlywheelSurfaceSpeedCommand(-3)).withTimeout(0.6);
     }
+
+    private Command fireNote() {
+        return intake.runIntakeCommand(0, 0, 5).withTimeout(0.3);
+    }
+
+    //////// ARM/SHOOTER /////////////
+
+    /** Resets the angle and speed of the shooter back to its default idle position. */
+    private Command resetShooter() {
+        double desiredAngle = ArmConstants.armMinAngleDegrees + 2; // puts the arm at min height to pass under stage
+
+        return arm.setDesiredDegreesCommand(desiredAngle)
+                .alongWith(shooter.setFlywheelSurfaceSpeedCommand(0));
+    }
+
+    private Command speakerShot() {
+        PrepShot aim = new PrepShot(drivetrain, arm, shooter, driver::getRequestedFieldOrientedVelocity, leds, FieldElement.SPEAKER);
+        Command waitForAlignment = new WaitUntilCommand(() -> {return drivetrain.hasRecentSpeakerTagMeasurement(0.25);})
+                                    .withTimeout(1)
+                                    .andThen(new WaitUntilCommand(aim::readyToShoot));  // wait for vision to stabilize
+        Command fire = fireNote();
+        return aim.raceWith(waitForAlignment.andThen(fire));
+    }
+    
+    private Command shart() {
+        PrepShot aim = new PrepShot(drivetrain, arm, shooter, null, leds, FieldElement.CARPET);
+        Command waitForAlignment = new WaitUntilCommand(aim::readyToShoot);
+        Command fire = fireNote();
+        return aim.raceWith(waitForAlignment.andThen(fire));
+    }
+
+    private Command prepLobShot() {
+        return new PrepShot(drivetrain, arm, shooter, driver::getRequestedFieldOrientedVelocity, leds, FieldElement.LOB_TARGET);
+    }
+
     /**
      * @param howToDriveWhenNoNoteDetected let's driver have control if the noteCam doesn't see a note
      * @return

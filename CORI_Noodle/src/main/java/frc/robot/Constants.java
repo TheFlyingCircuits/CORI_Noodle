@@ -55,7 +55,8 @@ public final class Constants {
         public final static double pivotHeightMeters = Units.inchesToMeters(15);
         
         /** Horizontal distance from the robot center to the pivot center */
-        public final static double pivotOffsetMeters = Units.inchesToMeters(-13);
+        //POSITIVE IF BEHIND THE CENTER
+        public final static double pivotOffsetMeters = Units.inchesToMeters(13);
 
         public final static double armLengthMeters = Units.inchesToMeters(17.73);
 
@@ -64,8 +65,8 @@ public final class Constants {
         public static final double armMinAngleDegrees = 7;
         public static final double armMaxAngleDegrees = 111.5;
 
-        public final static double armMaxVelDegreesPerSecond = 360.;
-        public final static double armMaxAccelDegreesPerSecondSquared = 660.;
+        public final static double armMaxVelDegreesPerSecond = 500.;
+        public final static double armMaxAccelDegreesPerSecondSquared = 1000.;
 
         public static final TrapezoidProfile.Constraints constraints = new Constraints(
             armMaxVelDegreesPerSecond,
@@ -76,11 +77,11 @@ public final class Constants {
         /***** REAL CONSTANTS ******/
         public final static double kSArmVolts = 0.00;
         public final static double kGArmVolts = 0.25;
-        public final static double kVArmVoltsSecondsPerRadian = 2.5; //3.1;
+        public final static double kVArmVoltsSecondsPerRadian = 2.25; //3.1;
         public final static double kAArmVoltsSecondsSquaredPerRadian = 0;
 
-        public final static double kPArmVoltsPerDegree = 0;//0.3;
-        public final static double kDArmVoltsSecondsPerDegree = 0;//0.01;
+        public final static double kPArmVoltsPerDegree = 0.01;
+        public final static double kDArmVoltsSecondsPerDegree = 0.;
     }
 
     public final static class ShooterConstants {

@@ -12,14 +12,28 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.VendorWrappers.Neo;
 
 public class Intake extends SubsystemBase {
-    private CANSparkMax bottomIntakeNeo;
-    private CANSparkMax topIntakeNeo;
-    private CANSparkMax indexerNeo;
+    private Neo bottomIntakeNeo;
+    private Neo topIntakeNeo;
+    private Neo indexerNeo;
     public Intake() {
-        bottomIntakeNeo = new CANSparkMax(IntakeConstants.bottomIntakeNeoID, MotorType.kBrushless);
-        topIntakeNeo = new CANSparkMax(IntakeConstants.topIntakeNeoID, MotorType.kBrushless);
-        indexerNeo = new CANSparkMax(IntakeConstants.indexerNeoID, MotorType.kBrushless);
+        bottomIntakeNeo = new Neo(IntakeConstants.bottomIntakeNeoID);
+        topIntakeNeo = new Neo(IntakeConstants.topIntakeNeoID);
+        indexerNeo = new Neo(IntakeConstants.indexerNeoID);
+
+        configMotors();
     }
+
+    private void configMotors() {
+        bottomIntakeNeo.setInverted(true);
+        bottomIntakeNeo.burnFlash();
+
+        topIntakeNeo.setInverted(true);
+        topIntakeNeo.burnFlash();
+
+        indexerNeo.setInverted(false);
+        indexerNeo.burnFlash();
+    }
+
     public Command runIntakeCommand(double bottomIntakeVolts, double topIntakeVolts, double indexerIntakeVolts) {
         // we can use this for intake, stop intake, and eject
         return this.run(
@@ -30,10 +44,11 @@ public class Intake extends SubsystemBase {
             }
         );
     }
+
     @Override
     public void periodic() {
-        // Logger.recordOutput("bottomIntakeNeoVelocity,RPM?", bottomIntakeNeo.getVelocity());
-        // Logger.recordOutput("topIntakeNeoVelocity,RPM?", topIntakeNeo.getVelocity());
-        // Logger.recordOutput("indexerNeoVelocity,RPM?", indexerNeo.getVelocity());
+        Logger.recordOutput("intake/bottomIntakeNeoVelocity,RPM?", bottomIntakeNeo.getVelocity());
+        Logger.recordOutput("intake/topIntakeNeoVelocity,RPM?", topIntakeNeo.getVelocity());
+        Logger.recordOutput("intake/indexerNeoVelocity,RPM?", indexerNeo.getVelocity());
     }
 }

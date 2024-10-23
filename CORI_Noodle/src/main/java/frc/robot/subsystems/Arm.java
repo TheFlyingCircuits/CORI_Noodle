@@ -75,13 +75,13 @@ public class Arm extends SubsystemBase {
         rightPivot.restoreFactoryDefaults();
         rightPivot.setSmartCurrentLimit(ampLimit);
         rightPivot.setInverted(false);
-        rightPivot.setIdleMode(IdleMode.kCoast);
+        rightPivot.setIdleMode(IdleMode.kBrake);
         rightPivot.burnFlash();
 
         leftPivot.restoreFactoryDefaults();
         leftPivot.setSmartCurrentLimit(ampLimit);
         leftPivot.setInverted(true);
-        leftPivot.setIdleMode(IdleMode.kCoast);
+        leftPivot.setIdleMode(IdleMode.kBrake);
         leftPivot.burnFlash();
     }
 
