@@ -20,9 +20,10 @@ public class PrepShot extends Command {
     }
 
     private double getHorizontalMetersToPivot(Translation3d targetLocation) {
-        Translation2d robotLocation = drivetrain.getPoseMeters().getTranslation();
-        double robotToTargetDistance = targetLocation.toTranslation2d().minus(robotLocation).getNorm();
-        return robotToTargetDistance + ArmConstants.pivotOffsetMeters;
+        return 0;
+        // Translation2d robotLocation = drivetrain.getPoseMeters().getTranslation();
+        // double robotToTargetDistance = targetLocation.toTranslation2d().minus(robotLocation).getNorm();
+        // return robotToTargetDistance + ArmConstants.pivotOffsetMeters;
     }
 
     private double getVerticalMetersToFlywheels(Translation3d targetLocation, double armAngleRadians) {

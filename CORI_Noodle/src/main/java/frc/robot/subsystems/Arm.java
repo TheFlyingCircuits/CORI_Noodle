@@ -2,7 +2,10 @@ package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
@@ -42,12 +45,14 @@ public class Arm extends SubsystemBase {
     ArmPDController armPD;
 
     public Arm() {
-        leftPivot = new Neo(99);
-        rightPivot = new Neo(99);
+        leftPivot = new Neo(12);
+        rightPivot = new Neo(11);
 
         configMotors();
 
-        pivotEncoder = new CANcoder(99);
+        pivotEncoder = new CANcoder(4);
+
+        configCANcoder();
 
         armFeedforward = new ArmFeedforward(
             ArmConstants.kSArmVolts,
@@ -58,6 +63,7 @@ public class Arm extends SubsystemBase {
 
         armPD = new ArmPDController(ArmConstants.kPArmVoltsPerDegree, ArmConstants.kDArmVoltsSecondsPerDegree);
 
+        setpointVelocityTimer = new Timer();
 
 
         profile = new TrapezoidProfile(ArmConstants.constraints);
@@ -69,14 +75,25 @@ public class Arm extends SubsystemBase {
         rightPivot.restoreFactoryDefaults();
         rightPivot.setSmartCurrentLimit(ampLimit);
         rightPivot.setInverted(false);
-        rightPivot.setIdleMode(IdleMode.kBrake);
+        rightPivot.setIdleMode(IdleMode.kCoast);
         rightPivot.burnFlash();
 
         leftPivot.restoreFactoryDefaults();
         leftPivot.setSmartCurrentLimit(ampLimit);
         leftPivot.setInverted(true);
-        leftPivot.setIdleMode(IdleMode.kBrake);
+        leftPivot.setIdleMode(IdleMode.kCoast);
         leftPivot.burnFlash();
+    }
+
+    private void configCANcoder() {
+        CANcoderConfiguration canCoderConfig = new CANcoderConfiguration();
+        canCoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
+        canCoderConfig.MagnetSensor.MagnetOffset = ArmConstants.canCoderOffset;
+        canCoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+
+        pivotEncoder.getConfigurator().apply(canCoderConfig);
+    
+    
     }
 
     private void setArmMotorVolts(double volts) {
@@ -117,13 +134,26 @@ public class Arm extends SubsystemBase {
         if (Math.abs(this.targetAngleDegrees - prevTargetAngleDegrees) >= 2) {
             initState = new TrapezoidProfile.State(pivotAngleDegrees, pivotVelocityDegreesPerSecond);
             trapezoidProfileTimer.restart();
+            System.out.println("AAAAAAA");
+
+            profile.calculate( //calculate to start trapezoid profile
+                trapezoidProfileTimer.get(),
+                initState,
+                new TrapezoidProfile.State(targetAngleDegrees, 0)
+            );
+
+            Logger.recordOutput("isMovingToTarget", true);
         }
+
 
 
         double totalOutputVolts;
 
         //If there's no trapezoidal profile active, just use PID
         if (profile.isFinished(trapezoidProfileTimer.get())) {
+
+            Logger.recordOutput("isMovingToTarget", false);
+
             double feedforwardOutputVolts = armFeedforward.calculate(
                 Math.toRadians(targetAngleDegrees),
                 0);
@@ -139,6 +169,10 @@ public class Arm extends SubsystemBase {
 
         //otherwise, follow trapezoid profile
         else {
+
+            
+            Logger.recordOutput("isMovingToTarget", true);
+
             TrapezoidProfile.State desiredState = profile.calculate(
                 trapezoidProfileTimer.get(),
                 initState,
@@ -175,7 +209,8 @@ public class Arm extends SubsystemBase {
     }
 
     public Command setDesiredDegreesCommand(double targetAngleDegrees) {
-        return this.run(() -> {this.setDesiredDegrees(targetAngleDegrees);});
+        return this.run(() -> {
+            this.setDesiredDegrees(targetAngleDegrees);});
     }
 
     public Command holdCurrentPositionCommand() {
@@ -195,9 +230,17 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        this.pivotAngleDegrees = pivotEncoder.getPosition().getValueAsDouble()*360;
+        this.pivotAngleDegrees = pivotEncoder.getAbsolutePosition().getValueAsDouble()*360;
         this.pivotVelocityDegreesPerSecond = pivotEncoder.getVelocity().getValueAsDouble()*360;
 
-        Logger.recordOutput("pivotAngleDegrees", pivotEncoder.getPosition().getValueAsDouble());
+        Logger.recordOutput("arm/pivotAngleDegrees", pivotAngleDegrees);
+        Logger.recordOutput("arm/targetAngleDegrees", targetAngleDegrees);
+        Logger.recordOutput("arm/prevTargetAngleDegrees", prevTargetAngleDegrees);
+        Logger.recordOutput("arm/trapezoidProfileTimer", trapezoidProfileTimer.get());
+
+        Logger.recordOutput("arm/leftMotor/appliedOutput", leftPivot.getAppliedOutput());
+        Logger.recordOutput("arm/rightMotor/appliedOutput", rightPivot.getAppliedOutput());
+        Logger.recordOutput("arm/leftMotor/current", leftPivot.getOutputCurrent());
+        Logger.recordOutput("arm/rightMotor/current", rightPivot.getOutputCurrent());
     }
 }

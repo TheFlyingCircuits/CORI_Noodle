@@ -20,12 +20,13 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static class OperatorConstants {
-        public static final int kDriverControllerPort = 0;
-    }
+
+    
+    public static final boolean atCompetition = false;
 
     public static class ArmConstants {
 
+        public final static double canCoderOffset = -0.272;
 
         //TODO: FILL
         /** Distance from the floor to the center of the pivot. This is used for angle calculations for shoot from anywhere. */
@@ -38,8 +39,8 @@ public final class Constants {
 
 
 
-        public static final double armMinAngleDegrees = 1.285;
-        public static final double armMaxAngleDegrees = 100;
+        public static final double armMinAngleDegrees = 7;
+        public static final double armMaxAngleDegrees = 111.5;
 
         public final static double armMaxVelDegreesPerSecond = 360.;
         public final static double armMaxAccelDegreesPerSecondSquared = 660.;
@@ -51,13 +52,13 @@ public final class Constants {
 
 
         /***** REAL CONSTANTS ******/
-        public final static double kSArmVolts = 0.005;
-        public final static double kGArmVolts = 0.32;
-        public final static double kVArmVoltsSecondsPerRadian = 3.1;
+        public final static double kSArmVolts = 0.00;
+        public final static double kGArmVolts = 0.25;
+        public final static double kVArmVoltsSecondsPerRadian = 2.5; //3.1;
         public final static double kAArmVoltsSecondsSquaredPerRadian = 0;
 
-        public final static double kPArmVoltsPerDegree = 0.3;
-        public final static double kDArmVoltsSecondsPerDegree = 0.01;
+        public final static double kPArmVoltsPerDegree = 0;//0.3;
+        public final static double kDArmVoltsSecondsPerDegree = 0;//0.01;
     }
 
     public static class VisionConstants {
@@ -73,5 +74,6 @@ public final class Constants {
             new Rotation3d(0, Math.toRadians(-28), 0)
         );
     }
+
 
 }
