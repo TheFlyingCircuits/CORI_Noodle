@@ -62,10 +62,15 @@ public class RobotContainer {
     CommandXboxController controller = charlie.getXboxController();
     CommandXboxController benController = ben.getXboxController();
     controller.rightTrigger()
-      .onTrue(
+      .whileTrue(
         //intake after note if on other side of the field
         intakeTowardsNote(charlie::getRequestedFieldOrientedVelocity)
-    );
+      ).onFalse(
+        positionNote()
+      );
+    
+    
+    ;
     controller.leftTrigger().whileTrue(reverseIntake());
     controller.y().onTrue(new InstantCommand(() -> drivetrain.setPoseToVisionMeasurement()).repeatedly().until(drivetrain::seesTag));
   }
@@ -78,11 +83,11 @@ private Command reverseIntake() {
 }
   private Command intakeNote() {
     return new ScheduleCommand(leds.playIntakeAnimationCommand(() -> {return drivetrain.getBestNoteLocationFieldFrame().isPresent();}).withName("intake animation"))
-        .alongWith(this.runIntake().andThen(new ScheduleCommand(positionNote())));
+        .alongWith(this.runIntake());
 }
 
   private Command positionNote() {
-    return intake.runIntakeCommand(0,0,-2).withTimeout(3);
+    return intake.runIntakeCommand(0,0,-2).withTimeout(0.6);
   }
     /**
      * @param howToDriveWhenNoNoteDetected let's driver have control if the noteCam doesn't see a note
