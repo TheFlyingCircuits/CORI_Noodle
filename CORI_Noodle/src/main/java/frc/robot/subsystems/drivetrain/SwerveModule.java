@@ -31,8 +31,10 @@ public class SwerveModule {
     public SwerveModule(SwerveModuleIO io, int moduleIndex) {
         this.moduleIndex = moduleIndex;
 
-      inputs = new SwerveModuleIOInputsAutoLogged();
-        
+        this.io = io;
+
+        inputs = new SwerveModuleIOInputsAutoLogged();
+
         drivePID = new PIDController(
             SwerveModuleConstants.drivekPVoltsPerMeterPerSecond, 
             SwerveModuleConstants.drivekIVoltsPerMeter, 
@@ -49,7 +51,10 @@ public class SwerveModule {
 
         anglePID.enableContinuousInput(-180, 180);
     }
+
     public void periodic() {
+        io.updateInputs(inputs);
+
         Logger.processInputs("module" + Integer.toString(moduleIndex), inputs);
     }
     private SwerveModuleState constrainState(SwerveModuleState toConstrain) {
@@ -94,12 +99,12 @@ public class SwerveModule {
     }
     public SwerveModuleState getState() {
     
-    return new SwerveModuleState(
-        inputs.driveVelocityMetersPerSecond,
-        Rotation2d.fromDegrees(
-            //  use the absolut encoder
-            inputs.angleAbsolutePositionDegrees)
-        );
+        return new SwerveModuleState(
+            inputs.driveVelocityMetersPerSecond,
+            Rotation2d.fromDegrees(
+                //  use the absolut encoder
+                inputs.angleAbsolutePositionDegrees)
+            );
     }
 
     public SwerveModulePosition getPosition() {

@@ -4,14 +4,6 @@
 
 package frc.robot;
 
-import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.drivetrain.GyroIOPigeon;
-import frc.robot.subsystems.drivetrain.SwerveModuleIONeo;
-import frc.robot.subsystems.leds.LEDs;
-import frc.robot.subsystems.HumanDriver;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.vision.VisionIOPhotonLib;
-
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -20,6 +12,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.HumanDriver;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.drivetrain.GyroIOPigeon;
+import frc.robot.subsystems.drivetrain.SwerveModuleIONeo;
+import frc.robot.subsystems.leds.LEDs;
+import frc.robot.subsystems.vision.VisionIOPhotonLib;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -38,12 +37,12 @@ public class RobotContainer {
   /**** INITIALIZE SUBSYSTEMS ****/
   public RobotContainer() {
     if (RobotBase.isReal()) {
-      drivetrain = new Drivetrain(
+      drivetrain = new Drivetrain( // fr 0.092041015625, br , 0.0419921875, fl -0.178955078125, bl -0.332763671875
           new GyroIOPigeon(),
-          new SwerveModuleIONeo(7, 8, -0.206787109375, 0),
-          new SwerveModuleIONeo(5, 6, -0.339599609375, 3),
-          new SwerveModuleIONeo(3, 4, 0.33935546875, 2),
-          new SwerveModuleIONeo(1, 2, -0.177978515625, 1),
+          new SwerveModuleIONeo(7, 8, -0.178955078125, 0), 
+          new SwerveModuleIONeo(5, 6, 0.092041015625, 3),
+          new SwerveModuleIONeo(3, 4, -0.332763671875, 2),
+          new SwerveModuleIONeo(1, 2,  0.0419921875, 1),
           new VisionIOPhotonLib()
         );
     }
@@ -53,6 +52,7 @@ public class RobotContainer {
 
     // drives I think
     drivetrain.setDefaultCommand(drivetrain.run(() -> {drivetrain.fieldOrientedDrive(charlie.getRequestedFieldOrientedVelocity(), true);}));
+    intake.setDefaultCommand(intake.runIntakeCommand(0, 0, 0));
 
     // Configure the trigger bindings
     realBindings();
@@ -63,16 +63,16 @@ public class RobotContainer {
     CommandXboxController benController = ben.getXboxController();
 
     controller.rightTrigger()
-    .onTrue(
+      .onTrue(
         //intake after note if on other side of the field
 
         intakeTowardsNote(charlie::getRequestedFieldOrientedVelocity)
-    );
+      );
     controller.leftTrigger().whileTrue(reverseIntake());
     controller.y().onTrue(new InstantCommand(() -> drivetrain.setPoseToVisionMeasurement()).repeatedly().until(drivetrain::seesTag));
   }
   private Command runIntake() {
-    return intake.runIntakeCommand(2,2,2);
+    return intake.runIntakeCommand(5,5,5);
 }
 
 private Command reverseIntake() {
@@ -80,7 +80,7 @@ private Command reverseIntake() {
 }
   private Command intakeNote() {
     return new ScheduleCommand(leds.playIntakeAnimationCommand(() -> {return drivetrain.getBestNoteLocationFieldFrame().isPresent();}).withName("intake animation"))
-        .alongWith(this.runIntake());
+        .alongWith(this.runIntake()); //TODO: add intake logic/sequencing
   
 }
     /**

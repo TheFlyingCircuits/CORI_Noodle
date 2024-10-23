@@ -5,7 +5,11 @@
 package frc.robot;
 
 import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -20,12 +24,29 @@ public class Robot extends LoggedRobot {
 
   private RobotContainer m_robotContainer;
 
+
+  
+  private void initAdvantageKit() {
+      Logger.recordMetadata("projectName", "2024Robot");
+      Logger.addDataReceiver(new NT4Publisher());
+      if (Constants.atCompetition) {
+          Logger.addDataReceiver(new WPILOGWriter()); // <- log to USB stick
+      }
+      new PowerDistribution(); // Apparently just constructing a PDH
+                                // will allow it's values to be logged? 
+                                // This is what the advantage kit docs imply at least.
+      Logger.start();
+  }
+
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
   public void robotInit() {
+    initAdvantageKit();
+
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();

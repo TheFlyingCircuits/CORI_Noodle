@@ -44,10 +44,11 @@ public class VisionIOPhotonLib implements VisionIO {
     PhotonCamera noteCamera;
 
     public VisionIOPhotonLib() {
-        noteCamera = new PhotonCamera("noteCamera");
+        // noteCamera = new PhotonCamera("noteCamera");
+        
 
         tagCameras = Arrays.asList(
-            new PhotonCamera(VisionConstants.cameraNames[0])
+            // new PhotonCamera(VisionConstants.cameraNames[0])
         );
 
         /* When in demo mode, the apriltags will probably be pitched/rolled a bit
@@ -358,7 +359,7 @@ public class VisionIOPhotonLib implements VisionIO {
             }
         });
 
-        inputs.detectedNotesRobotFrame = updateIntakeCamera();
+        // inputs.detectedNotesRobotFrame = updateIntakeCamera();
     }
 }
 
