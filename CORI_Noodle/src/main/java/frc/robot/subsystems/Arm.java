@@ -138,7 +138,6 @@ public class Arm extends SubsystemBase {
         if (Math.abs(this.targetAngleDegrees - prevTargetAngleDegrees) >= 2) {
             initState = new TrapezoidProfile.State(pivotAngleDegrees, pivotVelocityDegreesPerSecond);
             trapezoidProfileTimer.restart();
-            System.out.println("AAAAAAA");
 
             profile.calculate( //calculate to start trapezoid profile
                 trapezoidProfileTimer.get(),

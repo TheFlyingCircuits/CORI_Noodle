@@ -222,7 +222,7 @@ public final class Constants {
         
         public final static Transform3d robotToNoteCamera = new Transform3d(
             new Translation3d(Units.inchesToMeters(-17.75), 0, Units.inchesToMeters(13.75)),
-            new Rotation3d(0, Math.toRadians(0), Math.toRadians(0))
+            new Rotation3d(0, Math.toRadians(22), Math.toRadians(180))
         );
 
         public final static Transform3d robotToShooterCamera = new Transform3d(

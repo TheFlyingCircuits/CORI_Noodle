@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 14.65,
+        "y": 4.825
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 12.491874422575759,
+        "y": 4.825
+      },
+      "isLocked": false,
+      "linkedName": "Center Side Start"
+    },
+    {
+      "anchor": {
+        "x": 10.67,
+        "y": 3.89
+      },
+      "prevControl": {
+        "x": 12.248157892990372,
+        "y": 4.816380559126915
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0
+  },
+  "goalEndState": {
+    "velocity": 4.5,
+    "rotation": 31.189999999999998,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "HyperChad Center Side",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

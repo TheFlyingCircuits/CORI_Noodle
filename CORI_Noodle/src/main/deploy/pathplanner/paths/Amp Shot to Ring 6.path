@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 12.167698950782516,
+        "y": 6.423379769836463
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 10.63832281510717,
+        "y": 6.541783083566167
+      },
+      "isLocked": false,
+      "linkedName": "Amp Shot"
+    },
+    {
+      "anchor": {
+        "x": 9.523358277485787,
+        "y": 5.38735077470155
+      },
+      "prevControl": {
+        "x": 10.154842617377545,
+        "y": 6.413512827025654
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0
+  },
+  "goalEndState": {
+    "velocity": 4.5,
+    "rotation": 47.36021166711711,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "HyperChad Amp Side",
+  "previewStartingState": {
+    "rotation": -10.759999999999991,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

@@ -1,0 +1,74 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 14.01,
+        "y": 4.28
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 14.087129745002716,
+        "y": 4.517804546709722
+      },
+      "isLocked": true,
+      "linkedName": "Ring 3 Rapid Pickup"
+    },
+    {
+      "anchor": {
+        "x": 14.42,
+        "y": 5.55
+      },
+      "prevControl": {
+        "x": 14.67,
+        "y": 5.55
+      },
+      "nextControl": {
+        "x": 14.17,
+        "y": 5.55
+      },
+      "isLocked": true,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 13.96,
+        "y": 5.55
+      },
+      "prevControl": {
+        "x": 14.21,
+        "y": 5.55
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "Ring 2 Rapid Pickup"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0.0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 2.75,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "HyperChad Center Side",
+  "previewStartingState": {
+    "rotation": 26.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

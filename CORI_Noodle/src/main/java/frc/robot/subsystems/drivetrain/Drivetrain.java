@@ -642,6 +642,7 @@ public class Drivetrain extends SubsystemBase {
     public void periodic() {
         gyroIO.updateInputs(gyroInputs);
         visionIO.updateInputs(visionInputs);
+
         for (SwerveModule mod : swerveModules)
             mod.periodic();
 
@@ -683,10 +684,12 @@ public class Drivetrain extends SubsystemBase {
         // Note tracking visualization
         if (getBestNoteLocationFieldFrame().isPresent()) {
             Translation2d noteFieldFrame = getBestNoteLocationFieldFrame().get();
+            Logger.recordOutput("drivetrain/seesTrackedNote", true);
             Logger.recordOutput("drivetrain/trackedNotePose", new Pose2d(noteFieldFrame, new Rotation2d()));
             Logger.recordOutput("drivetrain/trackedNoteDistance", noteFieldFrame.getNorm());
         }
         else {
+            Logger.recordOutput("drivetrain/seesTrackedNote", false);
             Logger.recordOutput("drivetrain/trackedNotePose", getPoseMeters());
         }
 

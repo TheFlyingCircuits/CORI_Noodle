@@ -39,7 +39,7 @@ public class PrepShot extends Command {
      *  @param translationController - Supplier that provides chassisSpeeds so that the robot can be controlled while aiming. Set this to null when prepping a shot in auto
      *                                 (this means that the drivetrain will not move at all, only the arm and flywheels.)
      */
-    public PrepShot(Drivetrain drivetrain, Arm arm, Shooter flywheels, Supplier<ChassisSpeeds> translationController, LEDs leds, FieldElement target) {
+    public PrepShot(Drivetrain drivetrain, Arm arm, Shooter flywheels, Supplier<ChassisSpeeds> translationController, FieldElement target) {
         this.drivetrain = drivetrain;
         this.arm = arm;
         this.flywheels = flywheels;

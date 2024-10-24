@@ -186,8 +186,8 @@ public class Shooter extends SubsystemBase {
     public boolean flywheelsAtSetpoints() {
 
 
-        return Math.abs(getLeftFlywheelsMetersPerSecond() - leftSetpointMetersPerSecond) < 1.0
-            && Math.abs(getRightFlywheelsMetersPerSecond() - rightSetpointMetersPerSecond) < 1.0;
+        return Math.abs(getLeftFlywheelsMetersPerSecond() - leftSetpointMetersPerSecond) < 1.5
+            && Math.abs(getRightFlywheelsMetersPerSecond() - rightSetpointMetersPerSecond) < 1.5;
     }
 
     public double getWorstError() {
