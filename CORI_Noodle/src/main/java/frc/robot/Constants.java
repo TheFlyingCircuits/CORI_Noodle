@@ -80,8 +80,8 @@ public final class Constants {
         public final static double kVArmVoltsSecondsPerRadian = 2.25; //3.1;
         public final static double kAArmVoltsSecondsSquaredPerRadian = 0;
 
-        public final static double kPArmVoltsPerDegree = 0.01;
-        public final static double kDArmVoltsSecondsPerDegree = 0.;
+        public final static double kPArmVoltsPerDegree = 0.03;
+        public final static double kDArmVoltsSecondsPerDegree = 0.001;
     }
 
     public final static class ShooterConstants {
@@ -141,12 +141,7 @@ public final class Constants {
 
         /**
          * Distance between the center point of the left wheels and the center point of the right wheels.
-         */        /**
-         * Distance between the center point of the front wheels and the center point of the back wheels.
          */
-        /**
-         * Distance from the center of the robot to each swerve module.
-         */  //0.4177
 
         public static final double trackwidthMeters = Units.inchesToMeters(22.75);
         /**

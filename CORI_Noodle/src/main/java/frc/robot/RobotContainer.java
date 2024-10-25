@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -74,7 +75,7 @@ public class RobotContainer {
         arm = new Arm();
         shooter = new Shooter();
 
-        arm.setDefaultCommand(arm.holdCurrentPositionCommand());
+        // arm.setDefaultCommand(arm.holdCurrentPositionCommand());
         shooter.setDefaultCommand(shooter.setFlywheelSurfaceSpeedCommand(0));
         drivetrain.setDefaultCommand(drivetrain.run(() -> {drivetrain.fieldOrientedDrive(driver.getRequestedFieldOrientedVelocity(), true);}));
         intake.setDefaultCommand(intake.runIntakeCommand(0, 0, 0));
@@ -99,6 +100,7 @@ public class RobotContainer {
         // controller.y().onTrue(arm.setDesiredDegreesCommand(60));
         // controller.b().onTrue(arm.setDesiredDegreesCommand(90));
 
+        //speaker shot
         Trigger inSpeakerShotRange = new Trigger(drivetrain::inSpeakerShotRange);
         controller.rightBumper().and(inSpeakerShotRange)
             .onTrue(
@@ -116,6 +118,13 @@ public class RobotContainer {
                         // only fire if the lob shot wasn't cancelled
             );
 
+        //amp shot
+        controller.leftBumper()
+            .onTrue(prepAmpShot())
+            .onFalse(this.fireNoteLong().andThen(new ScheduleCommand(this.resetShooter())));
+        // use a schedule command so the onFalse sequence doesn't cancel the aiming while the note is being shot.
+        
+
         controller.b().onTrue(shart().andThen(new ScheduleCommand(resetShooter())));
         controller.x().onTrue(resetShooter());
 
@@ -125,16 +134,11 @@ public class RobotContainer {
     }
 
 
-
-    private Command runIntake() {
-        return intake.runIntakeCommand(5,5,5);
-    }
-
     private Command reverseIntake() {
         return intake.runIntakeCommand(-6,-6,-6);
     }
     private Command intakeNote() {
-        return this.runIntake();
+        return intake.runIntakeCommand(5,5,5);
     }
 
     /**
@@ -156,13 +160,27 @@ public class RobotContainer {
     }
 
     private Command positionNote() {
-        //reverse intake to position note and also to eject double intakes
-        return intake.runIntakeCommand(-6,-9,-4).alongWith(
-                shooter.setFlywheelSurfaceSpeedCommand(-3)).withTimeout(0.6);
+        return new SequentialCommandGroup(
+
+            new ParallelCommandGroup(
+                intake.runIntakeCommand(-6, -6, 0),
+                shooter.setFlywheelSurfaceSpeedCommand(0.5, 0)
+            ).withTimeout(0.5),
+
+            new ParallelCommandGroup(
+                intake.runIntakeCommand(-6, -6, -2),
+                shooter.setFlywheelSurfaceSpeedCommand(-2)
+            ).withTimeout(0.1)
+        );
+        
     }
 
     private Command fireNote() {
         return intake.runIntakeCommand(0, 0, 5).withTimeout(0.3);
+    }
+
+    private Command fireNoteLong() {
+        return intake.runIntakeCommand(0, 0, 5).withTimeout(1.0);
     }
 
     //////// ARM/SHOOTER /////////////
@@ -195,6 +213,20 @@ public class RobotContainer {
         return new PrepShot(drivetrain, arm, shooter, driver::getRequestedFieldOrientedVelocity, FieldElement.LOB_TARGET);
     }
 
+    /** Moves the arm back and spins up the flywheels to prepare for an amp shot. */
+    private Command prepAmpShot() {
+        Command autoAlignAmpShot = new PrepShot(drivetrain, arm, shooter, driver::getRequestedFieldOrientedVelocity, FieldElement.AMP);
+        Command noAlignAmpShot = new PrepShot(drivetrain, arm, shooter, null, FieldElement.AMP);
+
+        return noAlignAmpShot;
+        // return new ConditionalCommand(
+        //     autoAlignAmpShot,
+        //     noAlignAmpShot,
+        //     () -> {return drivetrain.inAmpShotRange() && !dontAmpAutoAlign.getAsBoolean();});
+        // This was probably spinning because the conditional command as a whole required the drivetrain,
+        // even when we chose the noAlignAmpShot. We should use schedule commands inside the conditional instead.
+    }
+    
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -202,6 +234,8 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
+
+        /* DEFAULT SHOOT AND BACKUP AUTO */
         // return new SequentialCommandGroup(
         //     speakerShot(),
         //     resetShooter().alongWith(
