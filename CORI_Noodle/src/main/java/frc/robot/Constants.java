@@ -63,7 +63,7 @@ public final class Constants {
 
 
         public static final double armMinAngleDegrees = 7;
-        public static final double armMaxAngleDegrees = 94;
+        public static final double armMaxAngleDegrees = 95;
 
         public final static double armMaxVelDegreesPerSecond = 500.;
         public final static double armMaxAccelDegreesPerSecondSquared = 1000.;

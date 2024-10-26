@@ -179,7 +179,7 @@ public class PrepShot extends Command {
             driveDesiredAngle = shootOnTheMoveTarget.toTranslation2d().minus(drivetrain.getPoseMeters().getTranslation()).getAngle();
         }
         else if (target == FieldElement.AMP) {
-            armDesiredDegrees = 94;
+            armDesiredDegrees = 95;
             driveDesiredAngle = Rotation2d.fromDegrees(-90);
             // facing the back of the robot at the amp (not dependent on alliance color)
 

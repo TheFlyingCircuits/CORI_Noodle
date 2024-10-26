@@ -151,7 +151,7 @@ public class Arm extends SubsystemBase {
                 new TrapezoidProfile.State(targetAngleDegrees, 0)
             );
 
-        }       
+        }
 
 
 

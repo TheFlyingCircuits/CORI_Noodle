@@ -221,8 +221,15 @@ public class Shooter extends SubsystemBase {
         
 
         Logger.recordOutput("shooter/bottomLeft/flywheelMetersPerSecond", bottomLeftMetersPerSecond);
+        Logger.recordOutput("shooter/bottomLeft/motorVolts", bottomLeftMotor.getAppliedOutput()*12);
+
         Logger.recordOutput("shooter/bottomRight/flywheelMetersPerSecond", bottomRightMetersPerSecond);
+        Logger.recordOutput("shooter/bottomRight/motorVolts", bottomRightMotor.getAppliedOutput()*12);
+
         Logger.recordOutput("shooter/topLeft/flywheelMetersPerSecond", topLeftMetersPerSecond);
+        Logger.recordOutput("shooter/topLeft/motorVolts", topLeftMotor.getAppliedOutput()*12);
+
         Logger.recordOutput("shooter/topRight/flywheelMetersPerSecond", topRightMetersPerSecond);
+        Logger.recordOutput("shooter/topRight/motorVolts", topRightMotor.getAppliedOutput()*12);
     }
 }
