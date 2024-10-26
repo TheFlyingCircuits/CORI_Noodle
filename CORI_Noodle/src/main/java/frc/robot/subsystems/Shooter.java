@@ -106,26 +106,31 @@ public class Shooter extends SubsystemBase {
         topRightMotor.setVelocityConversionFactor(ShooterConstants.motorRPMToFlywheelMPS);
     }
 
+
+    public void setLeftFlywheelsMetersPerSecond(double topDesiredMetersPerSecond, double bottomDesiredMetersPerSecond) {
+
+        this.leftSetpointMetersPerSecond = topDesiredMetersPerSecond;
+
+        double bottomFeedforwardOutput = flywheelsFeedforward.calculate(bottomDesiredMetersPerSecond);
+        double bottomPOutput = ShooterConstants.kPFlywheelsVoltsSecondsPerMeter *
+            (bottomDesiredMetersPerSecond - bottomLeftMetersPerSecond);
+        bottomPOutput = MathUtil.clamp(bottomPOutput, -ShooterConstants.pGainLimitVolts, ShooterConstants.pGainLimitVolts);
+        bottomLeftMotor.setVoltage(bottomFeedforwardOutput + bottomPOutput);
+
+        double topFeedforwardOutput = flywheelsFeedforward.calculate(topDesiredMetersPerSecond);
+        double topPOutput = ShooterConstants.kPFlywheelsVoltsSecondsPerMeter *
+            (topDesiredMetersPerSecond - topLeftMetersPerSecond);
+        topPOutput = MathUtil.clamp(topPOutput, -ShooterConstants.pGainLimitVolts, ShooterConstants.pGainLimitVolts);
+        topLeftMotor.setVoltage(topFeedforwardOutput + topPOutput);
+    }
+
     /**
      * Sets the surface speed of the left set of flywheels.
      * This is theoretically the speed that this side of the note will have when exiting the shooter.
      * @param metersPerSecond - Desired surface speed in meters per second.
      */
-    public void setLeftFlywheelsMetersPerSecond(double desiredMetersPerSecond) {
-
-        this.leftSetpointMetersPerSecond = desiredMetersPerSecond;
-
-        double feedforwardOutput = flywheelsFeedforward.calculate(desiredMetersPerSecond);
-
-        double bottomPOutput = ShooterConstants.kPFlywheelsVoltsSecondsPerMeter *
-            (desiredMetersPerSecond - bottomLeftMetersPerSecond);
-        bottomPOutput = MathUtil.clamp(bottomPOutput, -3, 3);
-        bottomLeftMotor.setVoltage(feedforwardOutput + bottomPOutput);
-
-        double topPOutput = ShooterConstants.kPFlywheelsVoltsSecondsPerMeter *
-            (desiredMetersPerSecond - topLeftMetersPerSecond);
-        topPOutput = MathUtil.clamp(topPOutput, -3, 3);
-        topLeftMotor.setVoltage(feedforwardOutput + topPOutput);
+    public void setLeftFlywheelsMetersPerSecond(double metersPerSecond) {
+        setLeftFlywheelsMetersPerSecond(metersPerSecond, metersPerSecond);
     }
 
     /**
@@ -135,26 +140,30 @@ public class Shooter extends SubsystemBase {
         return (bottomLeftMetersPerSecond + topLeftMetersPerSecond)/2.;
     }
 
+    public void setRightFlywheelsMetersPerSecond(double topDesiredMetersPerSecond, double bottomDesiredMetersPerSecond) {
+
+        this.leftSetpointMetersPerSecond = topDesiredMetersPerSecond;
+
+        double bottomFeedforwardOutput = flywheelsFeedforward.calculate(bottomDesiredMetersPerSecond);
+        double bottomPOutput = ShooterConstants.kPFlywheelsVoltsSecondsPerMeter *
+            (bottomDesiredMetersPerSecond - bottomRightMetersPerSecond);
+        bottomPOutput = MathUtil.clamp(bottomPOutput, -ShooterConstants.pGainLimitVolts, ShooterConstants.pGainLimitVolts);
+        bottomRightMotor.setVoltage(bottomFeedforwardOutput + bottomPOutput);
+
+        double topFeedforwardOutput = flywheelsFeedforward.calculate(topDesiredMetersPerSecond);
+        double topPOutput = ShooterConstants.kPFlywheelsVoltsSecondsPerMeter *
+            (topDesiredMetersPerSecond - topRightMetersPerSecond);
+        topPOutput = MathUtil.clamp(topPOutput, -ShooterConstants.pGainLimitVolts, ShooterConstants.pGainLimitVolts);
+        topRightMotor.setVoltage(topFeedforwardOutput + topPOutput);
+    }
+
     /**
-     * Sets the surface speed of the right set of flywheels.
+     * Sets the surface speed of the left set of flywheels.
      * This is theoretically the speed that this side of the note will have when exiting the shooter.
      * @param metersPerSecond - Desired surface speed in meters per second.
      */
-    public void setRightFlywheelsMetersPerSecond(double desiredMetersPerSecond) {
-
-        this.rightSetpointMetersPerSecond = desiredMetersPerSecond;
-
-        double feedforwardOutput = flywheelsFeedforward.calculate(desiredMetersPerSecond);
-
-        double bottomPOutput = ShooterConstants.kPFlywheelsVoltsSecondsPerMeter *
-            (desiredMetersPerSecond - bottomRightMetersPerSecond);
-        bottomPOutput = MathUtil.clamp(bottomPOutput, -3, 3);
-        bottomRightMotor.setVoltage(feedforwardOutput + bottomPOutput);
-
-        double topPOutput = ShooterConstants.kPFlywheelsVoltsSecondsPerMeter *
-            (desiredMetersPerSecond - topRightMetersPerSecond);
-        topPOutput = MathUtil.clamp(topPOutput, -3, 3);
-        topRightMotor.setVoltage(feedforwardOutput + topPOutput);
+    public void setRightFlywheelsMetersPerSecond(double metersPerSecond) {
+        setRightFlywheelsMetersPerSecond(metersPerSecond, metersPerSecond);
     }
 
     /**
@@ -164,13 +173,8 @@ public class Shooter extends SubsystemBase {
         return (bottomRightMetersPerSecond + topRightMetersPerSecond) / 2.;
     }
 
-    public void setBothFlywheelsMetersPerSecond(double metersPerSecond) {
-        setLeftFlywheelsMetersPerSecond(metersPerSecond);
-        setRightFlywheelsMetersPerSecond(metersPerSecond);
-    }
-
     public Command setFlywheelSurfaceSpeedCommand(double metersPerSecond) {
-        return this.run(() -> {this.setBothFlywheelsMetersPerSecond(metersPerSecond);});
+        return setFlywheelSurfaceSpeedCommand(metersPerSecond, metersPerSecond);
     }
 
     public Command setFlywheelSurfaceSpeedCommand(double leftMetersPerSecond, double rightMetersPerSecond) {
@@ -180,12 +184,20 @@ public class Shooter extends SubsystemBase {
                 this.setRightFlywheelsMetersPerSecond(rightMetersPerSecond);});
     }
 
+    public Command setFlywheelSurfaceSpeedCommand(
+        double topLeftMetersPerSecond, double topRightMetersPerSecond,
+        double bottomLeftMetersPerSecond, double bottomRightMetersPerSecond) {
+
+        return this.run(
+            () -> {
+                this.setLeftFlywheelsMetersPerSecond(topLeftMetersPerSecond, bottomLeftMetersPerSecond);
+                this.setRightFlywheelsMetersPerSecond(topRightMetersPerSecond, bottomRightMetersPerSecond);});
+    }
+
     /**
      * Returns true if both flywheels are spinning within some threshold of their target speeds.
      */
     public boolean flywheelsAtSetpoints() {
-
-
         return Math.abs(getLeftFlywheelsMetersPerSecond() - leftSetpointMetersPerSecond) < 1.5
             && Math.abs(getRightFlywheelsMetersPerSecond() - rightSetpointMetersPerSecond) < 1.5;
     }

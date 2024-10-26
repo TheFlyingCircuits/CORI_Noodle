@@ -140,18 +140,27 @@ public class PrepShot extends Command {
         double leftFlywheelMetersPerSecond = 24;
         double rightFlywheelMetersPerSecond = 19;
 
+        boolean topWheelsOnly = false; //only true for amp shot
+
         if (target == FieldElement.LOB_TARGET) {
             leftFlywheelMetersPerSecond = 15; // 13 and 9 was too low
             rightFlywheelMetersPerSecond = 10;
         }
         else if (target == FieldElement.AMP) {
-            leftFlywheelMetersPerSecond = 8;
-            rightFlywheelMetersPerSecond = 8;
+            leftFlywheelMetersPerSecond = 16;
+            rightFlywheelMetersPerSecond = 16;
+            topWheelsOnly = true;
         }
 
-        
-        flywheels.setLeftFlywheelsMetersPerSecond(leftFlywheelMetersPerSecond);
-        flywheels.setRightFlywheelsMetersPerSecond(rightFlywheelMetersPerSecond);
+        if (topWheelsOnly) {
+            flywheels.setLeftFlywheelsMetersPerSecond(leftFlywheelMetersPerSecond, 0);
+            flywheels.setRightFlywheelsMetersPerSecond(rightFlywheelMetersPerSecond, 0);
+        }
+        else {
+            flywheels.setLeftFlywheelsMetersPerSecond(leftFlywheelMetersPerSecond);
+            flywheels.setRightFlywheelsMetersPerSecond(rightFlywheelMetersPerSecond);
+
+        }
 
         /* Experiment reveals that simply averaging the requested velocities gives a really solid
          * estimate for the actual exit velocity (i.e. within 1 m/s) TODO: link desmos graph/experimental data.
@@ -170,7 +179,7 @@ public class PrepShot extends Command {
             driveDesiredAngle = shootOnTheMoveTarget.toTranslation2d().minus(drivetrain.getPoseMeters().getTranslation()).getAngle();
         }
         else if (target == FieldElement.AMP) {
-            armDesiredDegrees = 110;
+            armDesiredDegrees = 94;
             driveDesiredAngle = Rotation2d.fromDegrees(-90);
             // facing the back of the robot at the amp (not dependent on alliance color)
 

@@ -65,6 +65,9 @@ public class Arm extends SubsystemBase {
 
         setpointVelocityTimer = new Timer();
 
+        this.pivotAngleDegrees = pivotEncoder.getAbsolutePosition().getValueAsDouble()*360;
+        this.pivotVelocityDegreesPerSecond = pivotEncoder.getVelocity().getValueAsDouble()*360;
+        initState = new TrapezoidProfile.State(pivotAngleDegrees, pivotVelocityDegreesPerSecond);
 
         profile = new TrapezoidProfile(ArmConstants.constraints);
         trapezoidProfileTimer = new Timer();
@@ -146,7 +149,7 @@ public class Arm extends SubsystemBase {
             );
 
             Logger.recordOutput("isMovingToTarget", true);
-        }
+        }       
 
 
 
@@ -155,7 +158,7 @@ public class Arm extends SubsystemBase {
         //If there's no trapezoidal profile active, just use PID
         if (profile.isFinished(trapezoidProfileTimer.get())) {
 
-            Logger.recordOutput("isMovingToTarget", false);
+            Logger.recordOutput("arm/isMovingToTarget", false);
 
             double feedforwardOutputVolts = armFeedforward.calculate(
                 Math.toRadians(targetAngleDegrees),
@@ -174,7 +177,7 @@ public class Arm extends SubsystemBase {
         else {
 
             
-            Logger.recordOutput("isMovingToTarget", true);
+            Logger.recordOutput("arm/isMovingToTarget", true);
 
             TrapezoidProfile.State desiredState = profile.calculate(
                 trapezoidProfileTimer.get(),
@@ -240,6 +243,7 @@ public class Arm extends SubsystemBase {
         Logger.recordOutput("arm/targetAngleDegrees", targetAngleDegrees);
         Logger.recordOutput("arm/prevTargetAngleDegrees", prevTargetAngleDegrees);
         Logger.recordOutput("arm/trapezoidProfileTimer", trapezoidProfileTimer.get());
+        Logger.recordOutput("arm/initStateDegrees", initState.position);
 
         Logger.recordOutput("arm/leftMotor/appliedOutput", leftPivot.getAppliedOutput());
         Logger.recordOutput("arm/rightMotor/appliedOutput", rightPivot.getAppliedOutput());

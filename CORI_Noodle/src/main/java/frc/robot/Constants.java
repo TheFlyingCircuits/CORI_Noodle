@@ -63,7 +63,7 @@ public final class Constants {
 
 
         public static final double armMinAngleDegrees = 7;
-        public static final double armMaxAngleDegrees = 111.5;
+        public static final double armMaxAngleDegrees = 94;
 
         public final static double armMaxVelDegreesPerSecond = 500.;
         public final static double armMaxAccelDegreesPerSecondSquared = 1000.;
@@ -93,6 +93,7 @@ public final class Constants {
         public final static double motorRPMToFlywheelMPS = flywheelCircumferenceMeters * flywheelGearReduction / 60.;
     
         public final static double kPFlywheelsVoltsSecondsPerMeter = .1;
+        public final static double pGainLimitVolts = 5;
 
         public final static double kSFlywheelsVolts = 0.2735; //copied from ronnie
         public final static double kVFlywheelsVoltsSecondsPerMeter = 0.38;

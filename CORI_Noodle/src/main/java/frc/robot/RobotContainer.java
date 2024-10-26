@@ -75,7 +75,7 @@ public class RobotContainer {
         arm = new Arm();
         shooter = new Shooter();
 
-        // arm.setDefaultCommand(arm.holdCurrentPositionCommand());
+        arm.setDefaultCommand(arm.holdCurrentPositionCommand());
         shooter.setDefaultCommand(shooter.setFlywheelSurfaceSpeedCommand(0));
         drivetrain.setDefaultCommand(drivetrain.run(() -> {drivetrain.fieldOrientedDrive(driver.getRequestedFieldOrientedVelocity(), true);}));
         intake.setDefaultCommand(intake.runIntakeCommand(0, 0, 0));
@@ -170,17 +170,17 @@ public class RobotContainer {
             new ParallelCommandGroup(
                 intake.runIntakeCommand(-6, -6, -2),
                 shooter.setFlywheelSurfaceSpeedCommand(-2)
-            ).withTimeout(0.1)
+            ).withTimeout(0.15)
         );
         
     }
 
     private Command fireNote() {
-        return intake.runIntakeCommand(0, 0, 5).withTimeout(0.3);
+        return intake.runIntakeCommand(0, 0, 10).withTimeout(0.3);
     }
 
     private Command fireNoteLong() {
-        return intake.runIntakeCommand(0, 0, 5).withTimeout(1.0);
+        return intake.runIntakeCommand(0, 0, 10).withTimeout(1.0);
     }
 
     //////// ARM/SHOOTER /////////////
